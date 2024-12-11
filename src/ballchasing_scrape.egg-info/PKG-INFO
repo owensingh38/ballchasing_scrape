@@ -1,0 +1,16 @@
+Metadata-Version: 2.1
+Name: ballchasing_scrape
+Version: 1.0.3
+Summary: A Python Package for scraping information and stats from Rocket League replays hosted on ballchasing.com.
+Author-email: Owen <owenbksingh@gmail.com>
+Project-URL: Homepage, https://github.com/pypa/sampleproject
+Classifier: Programming Language :: Python :: 3
+Classifier: License :: OSI Approved :: MIT License
+Classifier: Operating System :: OS Independent
+Requires-Python: >=3.8
+Description-Content-Type: text/markdown
+License-File: LICENSE
+
+# Ballchasing_Scrape
+
+A Python Package for scraping information and stats from Rocket League replays hosted on ballchasing.com.

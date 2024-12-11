@@ -1,6 +1,6 @@
 [project]
 name = "ballchasing_scrape"
-version = "1.0.2"
+version = "1.0.3"
 authors = [
   { name="Owen", email="owenbksingh@gmail.com" },
 ]
@@ -12,9 +12,6 @@ classifiers = [
     "License :: OSI Approved :: MIT License",
     "Operating System :: OS Independent",
 ]
-
-[build-system]
-requires = ["pandas"]
 
 [project.urls]
 Homepage = "https://github.com/pypa/sampleproject"
