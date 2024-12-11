@@ -1,8 +1,8 @@
 [project]
 name = "ballchasing_scrape"
-version = "1.0.3"
+version = "1.0.6"
 authors = [
-  { name="Owen", email="owenbksingh@gmail.com" },
+  { name="Owen Singh", email="owenbksingh@gmail.com" },
 ]
 description = "A Python Package for scraping information and stats from Rocket League replays hosted on ballchasing.com."
 readme = "README.md"
@@ -14,4 +14,4 @@ classifiers = [
 ]
 
 [project.urls]
-Homepage = "https://github.com/pypa/sampleproject"
+Homepage = "https://github.com/owensingh38/ballchasing_scrape/"

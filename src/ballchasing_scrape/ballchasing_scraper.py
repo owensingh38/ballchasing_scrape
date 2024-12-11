@@ -1,7 +1,4 @@
-import pandas as pd
-import os
-
-def ballchasing_group_scrape_ids(groupurl,authkey):
+def scrape_replay_ids(groupurl,authkey):
     import requests
     import pandas as pd
     
@@ -36,7 +33,7 @@ def ballchasing_group_scrape_ids(groupurl,authkey):
     return list
  
 
-def ballchasing_group_scrape_pstats(groupurl,authkey):
+def scrape_player_stats(groupurl,authkey):
     import requests
     import pandas as pd
 
@@ -85,7 +82,7 @@ def ballchasing_group_scrape_pstats(groupurl,authkey):
 
     return pstats
 
-def ballchasing_group_scrape_tstats(groupurl,authkey):
+def scrape_team_stats(groupurl,authkey):
     import requests
     import pandas as pd
 
@@ -133,7 +130,7 @@ def ballchasing_group_scrape_tstats(groupurl,authkey):
 
     return tstats
 
-def ballchasing_group_scrape_player_gbgstats(groupurl,authkey):
+def scrape_game_by_game_stats(groupurl,authkey):
     import requests
     import pandas as pd
 
@@ -152,7 +149,7 @@ def ballchasing_group_scrape_player_gbgstats(groupurl,authkey):
     print("Beginning game by game scrape of group " + ext)
 
     #Retreival of Group IDs
-    res = ballchasing_group_scrape_ids("https://ballchasing.com/group/"+ext, authkeybc)
+    res = scrape_replay_ids("https://ballchasing.com/group/"+ext, authkeybc)
     if res.empty:
         print("Group not found...")
         return pd.DataFrame()

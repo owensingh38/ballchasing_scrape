@@ -11,17 +11,12 @@ pip install ballchasing_scrape
 ```
 
 ## Usage
+Sample script collecting replays from the RLCS 2024 World Championship and exporting them into a single folder
 
 ```python
-import ballchasing_scrape
-
-#Sample script collecting replays from the RLCS 2024 World Championship and exporting them into a single folder
-
 import pandas as pd
 import ballchasing_scrape as bc
 import os
-
-print(bc)
 
 #Stats import
 groups = [
@@ -47,10 +42,10 @@ gmsdfs = []
 
 #Loop performing scrape functions on each group
 for i in range (0,len(groups)):
-    pdfs.append(bc.ballchasing_group_scrape_pstats(groups[i],authkey))
-    tdfs.append(bc.ballchasing_group_scrape_tstats(groups[i],authkey))
-    gbgdfs.append(bc.ballchasing_group_scrape_player_gbgstats(groups[i],authkey))
-    iddfs.append(bc.ballchasing_group_scrape_ids(groups[i],authkey))
+    pdfs.append(bc.scrape_player_stats(groups[i],authkey))
+    tdfs.append(bc.scrape_team_stats(groups[i],authkey))
+    gbgdfs.append(bc.scrape_game_by_game_stats(groups[i],authkey))
+    iddfs.append(bc.scrape_replay_ids(groups[i],authkey))
 
 res = input("What would you like to name the stats directory?")
 

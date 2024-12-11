@@ -2,8 +2,6 @@ import pandas as pd
 import ballchasing_scrape as bc
 import os
 
-print(bc)
-
 #Stats import
 groups = [
     'https://ballchasing.com/group/fur-vs-ssg-6p2jrte6kd',
@@ -28,10 +26,10 @@ gmsdfs = []
 
 #Loop performing scrape functions on each group
 for i in range (0,len(groups)):
-    pdfs.append(bc.ballchasing_group_scrape_pstats(groups[i],authkey))
-    tdfs.append(bc.ballchasing_group_scrape_tstats(groups[i],authkey))
-    gbgdfs.append(bc.ballchasing_group_scrape_player_gbgstats(groups[i],authkey))
-    iddfs.append(bc.ballchasing_group_scrape_ids(groups[i],authkey))
+    pdfs.append(bc.scrape_player_stats(groups[i],authkey))
+    tdfs.append(bc.scrape_team_stats(groups[i],authkey))
+    gbgdfs.append(bc.scrape_game_by_game_stats(groups[i],authkey))
+    iddfs.append(bc.scrape_replay_ids(groups[i],authkey))
 
 res = input("What would you like to name the stats directory?")
 
