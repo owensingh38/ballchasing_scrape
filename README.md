@@ -30,7 +30,7 @@ groups = [
     'https://ballchasing.com/group/kc-vs-g2-azjt2eb4ps',
     'https://ballchasing.com/group/g2-vs-bds-hwbf2eyolb'
 ]
-authkey = "J7yURe4iP94L8iJQTiwDRewni3MsyKoAHksLoH5r"
+authkey = "Auth Key Here"
 head = {
     'Authorization':  authkey
     }
