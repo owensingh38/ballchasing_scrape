@@ -71,4 +71,5 @@ ids.to_csv(res+"/"+res+"_replayids.csv",index=False)
 ## Ballchasing.com API
 
 For documentation on the Ballchasing API, see the following link: "https://ballchasing.com/doc/api". 
+
 You must provide an authentication key from Ballchasing.com in order to use this package.  You may generate one at "https://ballchasing.com/upload" after logging in.
