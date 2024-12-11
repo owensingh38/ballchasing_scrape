@@ -11,7 +11,7 @@ pip install ballchasing_scrape
 ```
 
 ## Usage
-Sample script collecting replays from the RLCS 2024 World Championship and exporting them into a single folder
+Sample script collecting replays from the RLCS 2024 World Championship and exporting them into a single folder.
 
 ```python
 import pandas as pd
@@ -67,3 +67,8 @@ gbgstats.to_csv(res+"/"+res+"_gbgstats.csv",index=False)
 ids.to_csv(res+"/"+res+"_replayids.csv",index=False)
 
 ```
+
+## Ballchasing.com API
+
+For documentation on the Ballchasing API, see the following link: "https://ballchasing.com/doc/api". 
+You must provide an authentication key from Ballchasing.com in order to use this package.  You may generate one at "https://ballchasing.com/upload" after logging in.
