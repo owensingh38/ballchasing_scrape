@@ -4,7 +4,7 @@ Ballchasing_Scrape is a Python package for scraping information and stats from R
 
 ## Installation
 
-Use the package manager [pip](https://pip.pypa.io/en/stable/) to install Ballcha.
+Use the package manager [pip](https://pip.pypa.io/en/stable/) to install Ballchasing_Scrape.
 
 ```bash
 pip install ballchasing_scrape
