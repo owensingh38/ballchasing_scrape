@@ -31,9 +31,7 @@ groups = [
     'https://ballchasing.com/group/g2-vs-bds-hwbf2eyolb'
 ]
 authkey = "Auth Key Here"
-head = {
-    'Authorization':  authkey
-    }
+
 pdfs = []
 tdfs = []
 gbgdfs = []
