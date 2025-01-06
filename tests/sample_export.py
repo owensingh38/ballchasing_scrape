@@ -4,19 +4,16 @@ import os
 
 #Stats import
 groups = [
-    'https://ballchasing.com/group/fur-vs-ssg-6p2jrte6kd',
-    'https://ballchasing.com/group/m8-vs-oxg-209d7inbro',
-    'https://ballchasing.com/group/flcn-vs-kc-5capn4b1aq',
-    'https://ballchasing.com/group/g2-vs-bds-mwweoplmx4',
-    'https://ballchasing.com/group/flcn-vs-oxg-b0qc0bywxr',
-    'https://ballchasing.com/group/g2-vs-fur-rxa5bsqwbx',
-    'https://ballchasing.com/group/bds-vs-flcn-5mbqpljhbt',
-    'https://ballchasing.com/group/kc-vs-g2-azjt2eb4ps',
-    'https://ballchasing.com/group/g2-vs-bds-hwbf2eyolb'
+    'https://ballchasing.com/group/fc-barcha-vs-bastard-munchen-qgmna4nqh9',
+    'https://ballchasing.com/group/blue-lock-season-hzptzik95z',
+    'https://ballchasing.com/group/rm-series-project-v-l7665k7q2m',
+    'https://ballchasing.com/group/pxg-v-ars-pmse9zychi',
+    'https://ballchasing.com/group/manshine-united-vs-marseille-fbgfufmb4m',
+    'https://ballchasing.com/group/manshine-united-vs-ajajax-b1pl2ryk7n'
 ]
 
 #Insert authkey obtained from ballchasing.com here
-authkey = "Auth key here"
+authkey = "yaFkUF1RNMLEkaEzBJvNSVBG1w3oeq5Eb3Ofda20"
 head = {
     'Authorization':  authkey
     }

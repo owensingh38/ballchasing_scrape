@@ -1,4 +1,3 @@
 from ballchasing_scrape.ballchasing_scraper import scrape_replay_ids
-from ballchasing_scrape.ballchasing_scraper import scrape_player_stats
-from ballchasing_scrape.ballchasing_scraper import scrape_team_stats
 from ballchasing_scrape.ballchasing_scraper import scrape_game_by_game_stats
+from ballchasing_scrape.ballchasing_scraper import player_group_stats_parser

@@ -259,18 +259,34 @@ def scrape_game_by_game_stats(groupurl,authkey):
         demos = df['demo']
 
         bps = []
+        
+        sf = 0
+        gf = 0
 
+        #Shots and Goals For
+        for i in range(0,len(bplayers)):
+            sf = sf + core[i]["shots"]
+            gf = gf + core[i]["goals"]
+
+        #Adding Individual Stats for Blue
         for i in range(0,len(bplayers)):
             print("Adding stats for " + bplayers[i] + " in game " + gameid + " for " + bteam[0] + " against " + oteam[0])
             stat = []
             stat.append(pd.DataFrame([core[i]]))
+            stat.append(pd.DataFrame([sf],columns=["shots for"]))
+            stat.append(pd.DataFrame([gf],columns=["goals for"]))
+            stat.append(pd.DataFrame([(core[i]["goals"]+core[i]["assists"])],columns=['gpar']))
+            try: stat.append(pd.DataFrame([round((core[i]["goals"]+core[i]["assists"])/gf,5)],columns=['gpar_percentage']))
+            except ZeroDivisionError:
+                stat.append(pd.DataFrame([0],columns=["gpar_percentage"]))
+
             stat.append(pd.DataFrame([boost[i]]))
             stat.append(pd.DataFrame([positioning[i]]))
             stat.append(pd.DataFrame([movement[i]]))
             stat.append(pd.DataFrame([demos[i]]))
             df = pd.concat(stat,axis=1)
             bps.append(df)
-
+        
         bluestats = pd.concat(bps,ignore_index=True)
         blueinfo = pd.concat([bgameid,bgamelink,bgroupid,bgrouplink,bdate,bmap,bplatform,bpid,bplayers,bcarid,bcarname,bpteam,bpopp],axis=1)
         
@@ -329,11 +345,25 @@ def scrape_game_by_game_stats(groupurl,authkey):
 
         ops = []
 
-        #Building the stats table
+        sf = 0
+        gf = 0
+
+        #Shots and Goals For
+        for i in range(0,len(bplayers)):
+            sf = sf + core[i]["shots"]
+            gf = gf + core[i]["goals"]
+
+        #Adding Individual Stats for Oeange
         for i in range(0,len(bplayers)):
             stat = []
             print("Adding stats for " + oplayers[i] + " in game " + gameid + " for " + oteam[0] + " against " + bteam[0])
             stat.append(pd.DataFrame([core[i]]))
+            stat.append(pd.DataFrame([sf],columns=["shots for"]))
+            stat.append(pd.DataFrame([gf],columns=["goals for"]))
+            stat.append(pd.DataFrame([(core[i]["goals"]+core[i]["assists"])],columns=['gpar']))
+            try: stat.append(pd.DataFrame([round((core[i]["goals"]+core[i]["assists"])/gf,5)],columns=['gpar_percentage']))
+            except ZeroDivisionError:
+                stat.append(pd.DataFrame([0],columns=["gpar_percentage"]))
             stat.append(pd.DataFrame([boost[i]]))
             stat.append(pd.DataFrame([positioning[i]]))
             stat.append(pd.DataFrame([movement[i]]))
@@ -349,6 +379,7 @@ def scrape_game_by_game_stats(groupurl,authkey):
         
         orangegame = pd.concat([orangeinfo,orangestats],axis=1)
 
+        #Building the stats table
         gamestats = pd.concat([bluegame,orangegame])
 
         print("Finished scrape for " + gameid + " in group " + groupid + "between " + bteam[0] + " and " + oteam[0])
@@ -357,7 +388,88 @@ def scrape_game_by_game_stats(groupurl,authkey):
 
     #Concatenate all scraped games into a single table and return the table
     groupgbg = pd.concat(ggbg)
+    groupgbg.rename(columns={"inflicted":"demos inflicted","taken":"demos taken"})
+    groupgbg = groupgbg.sort_values(by=['date','team',"name","id"],ascending=True)
     
     print("Finished scrape of group "+ext)
 
     return groupgbg
+
+def player_group_stats_parser(scrape,loc="",groupurl="",authkey=""):
+    import pandas as pd
+    
+    #Routs program to read local file or to scrape data live
+    if scrape == False:
+        df = pd.read_csv(loc)
+        ext = list(df['group id'])
+        ext = ext[0]
+    else: 
+        ext = groupurl.replace("https://ballchasing.com/group/","")
+        ext = ext.replace('/players-stats',"")
+        ext = ext.replace('/teams-stats',"")
+        ext = ext.replace('/players-games-stats',"")
+        ext = ext.replace('/teams-games-stats',"")
+
+        df = scrape_game_by_game_stats(groupurl,authkey)
+
+    #Stat Generation
+    players = df['name'].unique()
+    group_id = df['group id'].tolist()
+    group_id = group_id[0]
+    group_link = df['group link'].tolist()
+    group_link = group_link[0]
+    id = []
+    link = []
+    team = []
+    opp = []
+    platform = []
+    pid = []
+    car_id = []
+    car_name = []
+    gp = []
+    
+    #Info dataframe creation
+    for i in range(0, len(players)):
+        gp.append(df['name'].value_counts().get(players[i],0))
+        
+    for i in range(0,len(players)):
+        id.append(group_id)
+        link.append(group_link)
+        team.append(df.loc[df["name"] == players[i], "team"].tolist()[0])
+        opp.append(df.loc[df["name"] == players[i], "opponent"].tolist()[0])
+        platform.append(df.loc[df["name"] == players[i], "platform"].tolist()[0])
+        pid.append(df.loc[df["name"] == players[i], "id"].tolist()[0])
+        car_id.append(df.loc[df["name"] == players[i], "car_id"].tolist()[0])
+        car_name.append(df.loc[df["name"] == players[i], "car_name"].tolist()[0])
+
+    info = pd.DataFrame([id,link,platform,pid,players,car_id,car_name,team,opp,gp],index=["group id","group link","platform","id","name","car_id","car_name","team","opponent","games_played"])
+    info = info.transpose()
+
+    print("Parsing game by game stats to group stats in group " + ext)
+    stats = []
+    col = df.columns.tolist()
+    keys = []
+
+    #Filter unwanted keys
+    for i in range(0,len(col)):
+        if "percent" not in col[i] and i>=13:
+            keys.append(col[i])
+
+    #Sum stats in game-by-game frame by iterating through columns and retaining keys
+    for i in range(0,len(players)):
+        print("Adding player "+players[i]+" on "+team[i]+" in group "+group_id)
+        temp = []
+        for j in keys:
+            temp.append(df.loc[df["name"] == players[i], j].sum())
+        
+        stats.append(pd.DataFrame(temp,index=keys))
+
+    #Data organization
+    all = pd.concat(stats,axis=1)
+    all = all.transpose()
+    info = info.reset_index(drop=True)
+    all = all.reset_index(drop=True)
+
+    gstats = pd.concat([info,all],axis=1)
+    
+    return gstats
