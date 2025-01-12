@@ -1,6 +1,6 @@
-Metadata-Version: 2.1
+Metadata-Version: 2.2
 Name: ballchasing_scrape
-Version: 1.1
+Version: 1.1.1
 Summary: A Python Package for scraping information and stats from Rocket League replays hosted on ballchasing.com.
 Author-email: Owen Singh <owenbksingh@gmail.com>
 Project-URL: Homepage, https://github.com/owensingh38/ballchasing_scrape/
