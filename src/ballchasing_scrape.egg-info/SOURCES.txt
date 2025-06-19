@@ -3,6 +3,7 @@ README.md
 pyproject.toml
 src/ballchasing_scrape/__init__.py
 src/ballchasing_scrape/ballchasing_scrape.py
+src/ballchasing_scrape/ballchasing_scraper.py
 src/ballchasing_scrape.egg-info/PKG-INFO
 src/ballchasing_scrape.egg-info/SOURCES.txt
 src/ballchasing_scrape.egg-info/dependency_links.txt
