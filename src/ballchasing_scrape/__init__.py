@@ -1,6 +1,4 @@
 from ballchasing_scrape.ballchasing_scrape import post_replay
 from ballchasing_scrape.ballchasing_scrape import post_group
-from ballchasing_scrape.ballchasing_scrape import scrape_replay_ids
-from ballchasing_scrape.ballchasing_scrape import scrape_game_by_game_stats
-from ballchasing_scrape.ballchasing_scrape import player_group_stats_parser
+from ballchasing_scrape.ballchasing_scrape import scrape_group
 from ballchasing_scrape.ballchasing_scrape import ping_api
