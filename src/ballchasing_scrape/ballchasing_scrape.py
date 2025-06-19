@@ -4,7 +4,7 @@ import pandas as pd
 ### BALLCHASING SCRAPE ###
 
 ## GLOBAL VARIABLES ##
-stats_col = ['game_id','game_date','game_link','replay_id','game_title','map_code','duration','overtime','overtime_seconds',
+stats_col = ['game_id','game_date','game_link','replay_id','team_size','game_title','map_code','duration','overtime','overtime_seconds',
              'platform', 'steering_sensitivity','fov', 'height', 'pitch', 'distance', 'stiffness', 'swivel_speed', 'transition_speed', 
              'car_id','car_name','id','name','team',
              'start_time','end_time','time_on_field','mvp',
@@ -143,7 +143,10 @@ def scrape_replay_ids(groups,authkey,param={}):
 
         #Retreive list of replay IDs
         json = pd.json_normalize(data["list"])
-        ids = ids + json["id"].to_list()
+        if json.empty:
+            continue
+        else:
+            ids = ids + json["id"].to_list()
 
     return ids
 
@@ -184,6 +187,7 @@ def scrape_group(groupurl,authkey,param={}):
         df['game_link'] = data['link']
         df['replay_id'] = data['rocket_league_id']
         df['game_title'] = data['title']
+        df['team_size'] = data['team_size']
         df['map_code'] = data['map_code']
         df['duration'] = data['duration']
         df['overtime'] = data['overtime']
