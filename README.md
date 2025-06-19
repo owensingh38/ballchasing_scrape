@@ -16,6 +16,7 @@ Sample script collecting stats from replays uploaded by RLCS Referee on ballchas
 ```python
 import pandas as pd
 import ballchasing_scrape as bc
+import json
 import os
 
 #Query Parameters
@@ -23,15 +24,19 @@ param = {
     "uploader": 76561199225615730
 }
 
-#Insert authkey obtained from ballchasing.com here
-authkey = "yaFkUF1RNMLEkaEzBJvNSVBG1w3oeq5Eb3Ofda20"
+#Store ballchasing API key in a private file, such as a JSON
+#Can also store the key as a global variable
+with open('keys/keys.json', 'r') as f:
+        keys = json.load(f)
+
+AUTH = keys['ballchasing']
 head = {
-    'Authorization':  authkey
+    'Authorization':  AUTH
     }
 
 #Scraping stats from returned replays
 #Empty argument for 'groupurl' may be used when searching for replays not in a specific group
-df = bc.scrape_game_by_game_stats("",authkey,param=param)
+df = bc.scrape_group("",authkey,param=param)
 
 res = input("What would you like to name the stats directory?")
 

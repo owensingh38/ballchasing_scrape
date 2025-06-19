@@ -1,6 +1,6 @@
 Metadata-Version: 2.2
 Name: ballchasing_scrape
-Version: 1.1.1
+Version: 1.1.3
 Summary: A Python Package for scraping information and stats from Rocket League replays hosted on ballchasing.com.
 Author-email: Owen Singh <owenbksingh@gmail.com>
 Project-URL: Homepage, https://github.com/owensingh38/ballchasing_scrape/
@@ -24,39 +24,27 @@ pip install ballchasing_scrape
 ```
 
 ## Usage
-Sample script collecting replays from the RLCS 2024 World Championship and exporting them into a single folder.
+Sample script collecting stats from replays uploaded by RLCS Referee on ballchasing.com and exporting them to the local drive.
 
 ```python
 import pandas as pd
 import ballchasing_scrape as bc
 import os
 
-#Stats import
-groups = [
-    'https://ballchasing.com/group/fur-vs-ssg-6p2jrte6kd',
-    'https://ballchasing.com/group/m8-vs-oxg-209d7inbro',
-    'https://ballchasing.com/group/flcn-vs-kc-5capn4b1aq',
-    'https://ballchasing.com/group/g2-vs-bds-mwweoplmx4',
-    'https://ballchasing.com/group/flcn-vs-oxg-b0qc0bywxr',
-    'https://ballchasing.com/group/g2-vs-fur-rxa5bsqwbx',
-    'https://ballchasing.com/group/bds-vs-flcn-5mbqpljhbt',
-    'https://ballchasing.com/group/kc-vs-g2-azjt2eb4ps',
-    'https://ballchasing.com/group/g2-vs-bds-hwbf2eyolb'
-]
-authkey = "Auth Key Here"
+#Query Parameters
+param = {
+    "uploader": 76561199225615730
+}
 
-pdfs = []
-tdfs = []
-gbgdfs = []
-iddfs = []
-gmsdfs = []
+#Insert authkey obtained from ballchasing.com here
+authkey = "yaFkUF1RNMLEkaEzBJvNSVBG1w3oeq5Eb3Ofda20"
+head = {
+    'Authorization':  authkey
+    }
 
-#Loop performing scrape functions on each group
-for i in range (0,len(groups)):
-    pdfs.append(bc.scrape_player_stats(groups[i],authkey))
-    tdfs.append(bc.scrape_team_stats(groups[i],authkey))
-    gbgdfs.append(bc.scrape_game_by_game_stats(groups[i],authkey))
-    iddfs.append(bc.scrape_replay_ids(groups[i],authkey))
+#Scraping stats from returned replays
+#Empty argument for 'groupurl' may be used when searching for replays not in a specific group
+df = bc.scrape_game_by_game_stats("",authkey,param=param)
 
 res = input("What would you like to name the stats directory?")
 
@@ -67,20 +55,12 @@ except FileExistsError:
     ""
 
 #Local export to a csv file
-pstats = pd.concat(pdfs)
-tstats = pd.concat(tdfs)
-gbgstats = pd.concat(gbgdfs)
-ids = pd.concat(iddfs)
-
-pstats.to_csv(res+"/"+res+"_pstats.csv",index=False)
-tstats.to_csv(res+"/"+res+"_tstats.csv",index=False)
-gbgstats.to_csv(res+"/"+res+"_gbgstats.csv",index=False)
-ids.to_csv(res+"/"+res+"_replayids.csv",index=False)
+df.to_csv(res+"/"+res+"_pstats.csv",index=False)
 
 ```
 
 ## Ballchasing.com API
 
-For documentation on the Ballchasing API, see the following link: "https://ballchasing.com/doc/api". 
+For documentation on the Ballchasing API, see the following link: "https://ballchasing.com/doc/api".  The documentation provides parameters which may be used with functions in this package (pass parameters through the argument with "param=" in the same way you would with a standard API call).
 
 You must provide an authentication key from Ballchasing.com in order to use this package.  You may generate one at "https://ballchasing.com/upload" after logging in.
