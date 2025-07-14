@@ -1,5 +1,7 @@
 import requests as rs
 import pandas as pd
+import warnings
+warnings.filterwarnings("ignore")
 
 ### BALLCHASING SCRAPE ###
 
@@ -174,39 +176,49 @@ def scrape_group(groupurl,authkey,param={}):
         print(f'Scraping data from game: {game}')
         data = rs.get(url+game,headers=head).json()
 
-        #Stats columns
-        blue = pd.json_normalize(data['blue']['players'])
-        blue['team'] = data['blue']['name']
-        blue['opponent'] = data['orange']['name']
-        
-        orange = pd.json_normalize(data['orange']['players'])
-        orange['team'] = data['orange']['name']
-        orange['opponent'] = data['blue']['name']
-
-        blue['goals_for'] = blue['stats.core.goals'].sum()
-        blue['shots_for'] = blue['stats.core.shots'].sum()
-        orange['goals_for'] = orange['stats.core.goals'].sum()
-        orange['shots_for'] = orange['stats.core.shots'].sum()
-
-        df = pd.concat([blue,orange])
-
-        #Info columns
-        df['game_id'] = game
-        df['game_date'] = data['date']
-        df['game_link'] = data['link']
-        df['replay_id'] = data['rocket_league_id']
-        df['game_title'] = data['title']
-        df['team_size'] = data['team_size']
-        df['map_code'] = data['map_code']
-        df['duration'] = data['duration']
-        df['overtime'] = data['overtime']
-        
         try:
-            df['overtime_seconds'] = data['overtime_seconds']
+            print(f'Error: {data['error']}')
+            continue
         except:
-            df['overtime_seconds'] = None
-        
-        stats.append(df)
+        #Check if team name exists (if not then assign a name)
+            for team_color in ['blue','orange']:
+                try: data[team_color]['name']
+                except:
+                    data[team_color]['name'] = team_color.upper()
+
+            #Stats columns
+            blue = pd.json_normalize(data['blue']['players'])
+            blue['team'] = data['blue']['name']
+            blue['opponent'] = data['orange']['name']
+            
+            orange = pd.json_normalize(data['orange']['players'])
+            orange['team'] = data['orange']['name']
+            orange['opponent'] = data['blue']['name']
+
+            blue['goals_for'] = blue['stats.core.goals'].sum()
+            blue['shots_for'] = blue['stats.core.shots'].sum()
+            orange['goals_for'] = orange['stats.core.goals'].sum()
+            orange['shots_for'] = orange['stats.core.shots'].sum()
+
+            df = pd.concat([blue,orange])
+
+            #Info columns
+            df['game_id'] = game
+            df['game_date'] = data['date']
+            df['game_link'] = data['link']
+            df['replay_id'] = data['rocket_league_id']
+            df['game_title'] = data['title']
+            df['team_size'] = data['team_size']
+            df['map_code'] = data['map_code']
+            df['duration'] = data['duration']
+            df['overtime'] = data['overtime']
+            
+            try:
+                df['overtime_seconds'] = data['overtime_seconds']
+            except:
+                df['overtime_seconds'] = None
+            
+            stats.append(df)
 
     stats_df = pd.concat(stats).drop(columns=['mvp']).fillna(0)
 
