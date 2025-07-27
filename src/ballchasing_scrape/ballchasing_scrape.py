@@ -1,6 +1,7 @@
 import requests as rs
 import pandas as pd
 import warnings
+import os
 warnings.filterwarnings("ignore")
 
 ### BALLCHASING SCRAPE ###
@@ -22,24 +23,35 @@ stats_col = ['game_id','game_date','game_link','replay_id','team_size','game_tit
              'inflicted','taken']
 
 # POST FUNCTIONS #
-#Post Functions
-def post_replay(file_path, authkey, visibility="public", groupid=""):
+def post_replay(file_path:str, authkey:str, params:dict={}):
+    """Uploads a Rocket League replay file to Ballchasing.com.
+
+    Args:
+        file_path (str): The local file path of the replay file.
+        authkey (str): Ballchasing API authentication key.
+        params (dict, optional): Additional URL parameters. Defaults to {}.
+
+    Returns:
+        str: Replay ID if upload is successful or already exists.
+
+    Raises:
+        requests.exceptions.HTTPError: If the request fails for reasons other than duplicate.
+    """
+
     #Prepare upload request
-    url = "https://ballchasing.com/api/v2/upload"
+    url = "https://ballchasing.com/api/v2/upload?"
     file = {"file":open(file_path,"rb")}
     
     head = {
         'Authorization':  authkey
     }
 
-    param = {
-        "visibility": visibility,
-    }
-    if groupid != "":
-        param.update({"group": groupid})
+    #Apply params to url
+    for key, value in params.items():
+        url = f'{url}{key}={value}&'
 
     #Upload request
-    res = rs.post(url,headers=head,data=param,files=file)
+    res = rs.post(url,headers=head,files=file)
 
     #Assess API response
     if res.status_code == 201:
@@ -55,7 +67,21 @@ def post_replay(file_path, authkey, visibility="public", groupid=""):
         print("An error occured...\n")
         res.raise_for_status()
 
-def post_group(name, authkey, parent_id="",p_id="by-id",t_id="by-distinct-players"):
+def post_group(name:str, authkey:str, params:dict={}):
+    """Creates a new group on Ballchasing.com.
+
+    Args:
+        name (str): Name of the group to create.
+        authkey (str): Ballchasing API authentication key.
+        params (dict, optional): Additional parameters for group creation. Defaults to {}.
+
+    Returns:
+        str: Group ID if successful or already exists.
+
+    Raises:
+        requests.exceptions.HTTPError: If the request fails for reasons other than duplicate.
+    """
+    
     #Prepare upload request
     url = "https://ballchasing.com/api/groups"
     
@@ -63,17 +89,12 @@ def post_group(name, authkey, parent_id="",p_id="by-id",t_id="by-distinct-player
         'Authorization':  authkey
     }
 
-    param = {
+    params.update({
         "name": name,
-        "player_identification": p_id,
-        "team_identification": t_id
-    }
-
-    if parent_id != "":
-        param.update({"parent": parent_id})
+    })
 
     #Upload request
-    res = rs.post(url,headers=head,json=param)
+    res = rs.post(url,headers=head,json=params)
 
     #Assess API response
     if res.status_code == 201:
@@ -91,7 +112,7 @@ def post_group(name, authkey, parent_id="",p_id="by-id",t_id="by-distinct-player
 
 
 # SCRAPE FUNCTIONS #
-def extract_id(groupurl):
+def extract_id(groupurl:str):
     #Extract replay group ID from link
 
     for repl in ['https://ballchasing.com/group/','/players-stats','/teams-stats','/players-games-stats','/teams-games-stats']:
@@ -99,7 +120,7 @@ def extract_id(groupurl):
 
     return groupurl
 
-def scrape_file_structure(groupurl,authkey,groups,param={}):
+def scrape_file_structure(groupurl:str,authkey:str,groups:list,param:dict={}):
     #Direct API call by group filter or replay filter
     id = extract_id(groupurl)
     
@@ -126,7 +147,7 @@ def scrape_file_structure(groupurl,authkey,groups,param={}):
             scrape_file_structure(sub_group['id'],authkey,groups)
             print("Searching through sub-group " + sub_group['id'])
 
-def scrape_replay_ids(groups,authkey,param={}):
+def scrape_replay_ids(groups:list[str],authkey:str,param:dict={}):
     #Direct API call by group filter or replay filter
     url = "https://ballchasing.com/api/replays/"
 
@@ -153,8 +174,17 @@ def scrape_replay_ids(groups,authkey,param={}):
 
     return ids
 
-def scrape_group(groupurl,authkey,param={}):
-    #Given ballchasing group url and authkey, return stats at game level
+def scrape_group(groupurl:str,authkey:str,param:dict={}):
+    """Given ballchasing group url and authkey, return stats at game level.
+
+    Args:
+        groupurl (str): URL of the Ballchasing group.
+        authkey (str): Ballchasing API authentication key.
+        param (dict, optional): API query parameters. Defaults to {}.
+
+    Returns:
+        pd.DataFrame: DataFrame of stats for all replays in the group.
+    """
 
     #Search for all sub groups at url
     groups = []
@@ -236,7 +266,18 @@ def scrape_group(groupurl,authkey,param={}):
     return stats_df[[col for col in stats_col if col in stats_df.columns.to_list()]]
 
 # AGG FUNCTIONS #
-def calc_stats(df,group=['id','team']):
+def calc_stats(df:pd.DataFrame,group:list=['id','team']):
+    """Aggregates per-player or per-team statistics across games.
+
+    Args:
+        df (pd.DataFrame): DataFrame of individual game stats.
+        group (list, optional): Columns to group by. Defaults to ['id', 'team'].
+
+    Returns:
+        pd.DataFrame: Aggregated statistics with per-game metrics.
+    """
+
+    #Use mode to show the most common name and car used by player id
     def mode(series):
         return series.mode().iloc[0]
 
@@ -299,13 +340,16 @@ def calc_stats(df,group=['id','team']):
         taken=('taken','sum'),
     ).reset_index()
 
+    #Append per_game stats
     for stat in stats.columns[(len(group)+5):len(stats.columns)]:
         stats[f'{stat}_per_game'] = stats[stat]/stats['games_played']
 
+    #Additional offensive metrics
     stats['shooting_percentage'] = stats['goals']/stats['shots']
     stats['gpar'] = stats['goals']+stats['assists']
     stats['gpar_percentage'] = stats['gpar']/stats['goals_for']
 
+    #Rating calculation
     stats['rating'] = (
         stats['shots_per_game']/(stats['shots']/stats['games_played']) +
         stats['goals_per_game']/(stats['goals']/stats['games_played']) +
@@ -316,6 +360,8 @@ def calc_stats(df,group=['id','team']):
         stats['gpar_percentage']/(stats['goals']/stats['goals_for'])
     )/7
 
+    #If 'id' or 'name' are missing in the group by clause then however the grouping is done does not concern players
+    #When this is the case the columns pertaining to individual player metrics can be removed 
     if 'id' or 'name' not in group:
         stats = stats.drop(columns=['name','mvp',
                                     'shots_for','goals_for',
@@ -328,7 +374,16 @@ def calc_stats(df,group=['id','team']):
     return stats
 
 # MISC FUNCTIONS #
-def ping_api(authkey):
+def ping_api(authkey:str):
+    """Tests connectivity and access to Ballchasing.com API.
+
+    Args:
+        authkey (str): Ballchasing API authentication key.
+
+    Returns:
+        dict or str: API response if successful, or error message.
+    """
+     
     url = "https://ballchasing.com/api/"
     authkeybc = authkey
     
