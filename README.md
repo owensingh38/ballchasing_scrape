@@ -4,7 +4,7 @@ Ballchasing_Scrape is a Python package for scraping information and stats from R
 
 ## Installation
 
-Use the package manager [pip](https://pip.pypa.io/en/stable/) to install Ballchasing_Scrape.
+Use the pip to install Ballchasing_Scrape.
 
 ```bash
 pip install ballchasing_scrape
@@ -12,6 +12,11 @@ pip install ballchasing_scrape
 
 ## Usage
 Sample script collecting stats from replays uploaded by RLCS Referee on ballchasing.com and exporting them to the local drive.
+
+First, store your API key as an environment variable
+```bash
+$env:BALLCHASING_API_KEY = "YOUR_API_KEY"
+```
 
 ```python
 import pandas as pd
@@ -23,11 +28,7 @@ param = {
     "uploader": 76561199225615730
 }
 
-#Load ballchasing.com API Key (store as an environment variable)
-
-```bash
-$env:BALLCHASING_API_KEY = "YOUR_API_KEY"
-```
+#Load ballchasing.com API Key
 
 authkey = os.getenv('BALLCHASING_API_KEY')
 head = {

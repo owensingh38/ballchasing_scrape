@@ -1,4 +1,5 @@
 LICENSE
+README.md
 pyproject.toml
 src/ballchasing_scrape/__init__.py
 src/ballchasing_scrape/ballchasing_scrape.py
